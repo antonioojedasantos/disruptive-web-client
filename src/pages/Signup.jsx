@@ -10,7 +10,7 @@ function Signup() {
   const [formValues, setFormValues] = useState({
     email: "",
     user_name: "",
-    type_user: "reader", 
+    type_user: "reader",
   });
   const navigate = useNavigate();
 
@@ -19,6 +19,7 @@ function Signup() {
       const { email, user_name, type_user } = formValues;
       const response = await handleRegister(email, user_name, type_user);
       if (response.success) {
+
         navigate("/");
       } else {
         setErrorMessage(response.message);
@@ -62,36 +63,36 @@ function Signup() {
               name="user_name"
               value={formValues.user_name}
             />
-              <label>
-                <input
-                  type="radio"
-                  value="reader"
-                  name="type_user"
-                  checked={formValues.type_user === "reader"}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      type_user: e.target.value,
-                    })
-                  }
-                />
-                Lector
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="creator"
-                  name="type_user"
-                  checked={formValues.type_user === "creator"}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      type_user: e.target.value,
-                    })
-                  }
-                />
-                Creador
-              </label>
+            <label>
+              <input
+                type="radio"
+                value="reader"
+                name="type_user"
+                checked={formValues.type_user === "reader"}
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    type_user: e.target.value,
+                  })
+                }
+              />
+              Lector
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="creator"
+                name="type_user"
+                checked={formValues.type_user === "creator"}
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    type_user: e.target.value,
+                  })
+                }
+              />
+              Creador
+            </label>
           </div>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
           <button onClick={handleSignUp}>Registrarme</button>

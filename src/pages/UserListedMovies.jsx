@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Card from "../components/Card";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
-import { getUsersLikedMovies } from "../store";
-import { useDispatch, useSelector } from "react-redux";
 import { handleGetCategory } from "../controllers/categoryControlles";
 import { handleGetThemes } from "../controllers/themeController";
+import { handleRegisterContent } from "../controllers/contentController";
+import Modal from "react-modal";
+
+Modal.setAppElement('#root'); 
 
 export default function UserListedMovies() {
-  const movies = useSelector((state) => state.netflix.movies);
-
-  const dispatch = useDispatch();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [email, setEmail] = useState(undefined);
 
   const [name, setName] = useState("");
   const [categoryOrTheme, setCategoryOrTheme] = useState("categoria");
@@ -21,12 +18,7 @@ export default function UserListedMovies() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTheme, setSelectedTheme] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-
-  useEffect(() => {
-    if (email) {
-      dispatch(getUsersLikedMovies(email));
-    }
-  }, [dispatch, email]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (categoryOrTheme === "categoria") {
@@ -56,17 +48,22 @@ export default function UserListedMovies() {
     setCategoryOrTheme(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      name,
-      categoryOrTheme,
-      selectedCategory: categoryOrTheme === "categoria" ? selectedCategory : null,
-      selectedTheme: categoryOrTheme === "tematica" ? selectedTheme : null,
-      imageUrl,
-    });
-
-    
+    try {
+      const response = await handleRegisterContent(
+        name,
+        categoryOrTheme,
+        selectedCategory,
+        selectedTheme,
+        imageUrl
+      );
+      if (response.success) {
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setName("");
     setCategoryOrTheme("categoria");
@@ -80,23 +77,15 @@ export default function UserListedMovies() {
     return () => (window.onscroll = null);
   };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <Container>
       <Navbar isScrolled={isScrolled} />
       <div className="content flex column">
-        <h1>My List</h1>
-        <div className="grid flex">
-          {movies.map((movie, index) => {
-            return (
-              <Card
-                movieData={movie}
-                index={index}
-                key={movie.id}
-                isLiked={true}
-              />
-            );
-          })}
-        </div>
+        <h1>Agregar Contenido</h1>
         <FormContainer>
           <h2>Agregar nuevo contenido</h2>
           <form onSubmit={handleSubmit}>
@@ -165,6 +154,17 @@ export default function UserListedMovies() {
             <Button type="submit">Guardar</Button>
           </form>
         </FormContainer>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Success Modal"
+          style={customStyles}
+        >
+          <ModalContent>
+            <h2>Contenido agregado exitosamente</h2>
+            <Button onClick={closeModal}>Cerrar</Button>
+          </ModalContent>
+        </Modal>
       </div>
     </Container>
   );
@@ -177,10 +177,6 @@ const Container = styled.div`
     gap: 3rem;
     h1 {
       margin-left: 3rem;
-    }
-    .grid {
-      flex-wrap: wrap;
-      gap: 1rem;
     }
   }
 `;
@@ -246,3 +242,29 @@ const Button = styled.button`
     cursor: not-allowed;
   }
 `;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  h2 {
+    margin-bottom: 1rem;
+  }
+`;
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'rgba(0, 0, 0, 0.8)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.5rem',
+    padding: '2rem',
+    textAlign: 'center'
+  },
+};

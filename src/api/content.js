@@ -1,8 +1,14 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/themes";
+const API_URL = "http://localhost:3000/api/content";
 
-export const register = async (name, permission) => {
+export const register = async (
+  name,
+  categoryOrTheme,
+  selectedCategory,
+  selectedTheme,
+  imageUrl
+) => {
   try {
     const token = localStorage.getItem("token");
 
@@ -16,7 +22,7 @@ export const register = async (name, permission) => {
 
     const response = await axios.post(
       `${API_URL}/new`,
-      { name, permission },
+      { name, categoryOrTheme, selectedCategory, selectedTheme, imageUrl },
       { headers }
     );
 
@@ -28,7 +34,7 @@ export const register = async (name, permission) => {
   }
 };
 
-export const list = async () => {
+export const list = async (type) => {
   try {
     const token = localStorage.getItem("token");
 
@@ -40,7 +46,9 @@ export const list = async () => {
       Authorization: `Bearer ${token}`,
     };
 
-    const response = await axios.get(`${API_URL}/get`, { headers });
+    const params = type;
+
+    const response = await axios.get(`${API_URL}/get`, { headers, params });
     return response.data;
   } catch (error) {
     throw new Error(

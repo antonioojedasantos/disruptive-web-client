@@ -1,71 +1,38 @@
-# Getting Started with Create React App
+## Manual del Cliente Web Disruptive
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introducción
 
-## Available Scripts
+Bienvenido al manual del Cliente Web Disruptive. En esta guía, encontrará información detallada sobre cómo configurar, ejecutar y utilizar el cliente web Disruptive, que es una parte esencial de la plataforma Disruptive.
 
-In the project directory, you can run:
+## Tecnologías Utilizadas
 
-### `npm start`
+El Cliente Web Disruptive ha sido desarrollado utilizando las siguientes tecnologías:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **React**: Biblioteca de JavaScript para construir interfaces de usuario.
+- **React Router Dom**: Enrutador para React que permite la navegación entre componentes.
+- **Redux Toolkit**: Kit de herramientas oficial de Redux para la gestión del estado de la aplicación.
+- **React Redux**: Biblioteca para conectar React con Redux y gestionar el estado global de la aplicación.
+- **Axios**: Cliente HTTP basado en promesas para realizar solicitudes de red.
+- **Styled Components**: Biblioteca para escribir estilos CSS en componentes de React utilizando etiquetas de plantilla.
+- **React Modal**: Componente de modal flexible para React.
+- **React Icons**: Librería de iconos para React.
+- **Testing Library**: Herramientas para realizar pruebas en componentes de React.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Configuración
 
-### `npm test`
+Antes de ejecutar el Cliente Web, asegúrese de haber instalado correctamente todas las dependencias utilizando el siguiente comando en la terminal:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+npm install
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Ejecución
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Una vez que se hayan instalado todas las dependencias, puede ejecutar el Cliente Web Disruptive con el siguiente comando en la terminal:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+npm start
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Este comando iniciará la aplicación en modo de desarrollo. Abra su navegador web y vaya a `http://localhost:3000` para ver la aplicación en funcionamiento.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# disruptive-web-client
+¡Con esto, el Cliente Web Disruptive está listo para su uso! Si tiene alguna pregunta o necesita ayuda adicional, no dude en consultar la documentación o ponerse en contacto con el equipo de soporte técnico.

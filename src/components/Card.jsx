@@ -1,32 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { IoPlayCircleSharp } from "react-icons/io5";
-import { AiOutlinePlus } from "react-icons/ai";
-import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
-import { BiChevronDown } from "react-icons/bi";
-import { BsCheck } from "react-icons/bs";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { removeMovieFromLiked } from "../store";
 
 export default React.memo(function Card({ index, movieData, isLiked = false }) {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
-  const [email, setEmail] = useState(undefined);
-
-
-  const addToList = async () => {
-    try {
-      await axios.post("http://localhost:3000/api/user/add", {
-        email,
-        data: movieData,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <Container
@@ -34,56 +10,23 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <img
-        src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
+        src={movieData.image_url}
         alt="card"
-       
       />
 
       {isHovered && (
         <div className="hover">
+          <div className="info-container flex column">
+            <h3 className="name">{movieData.name}</h3>
+            <p><strong>Tipo:</strong> {movieData.type === 'categoria' ? 'Categoría' : 'Tema'}</p>
+            <p><strong>Detalle:</strong> {movieData.type_detail}</p>
+            <p><strong>Permiso:</strong> {movieData.permission === 'images' ? 'Imágenes' : movieData.permission === 'video-url' ? 'Videos - URL YouTube' : 'Documentos TXT'}</p>
+          </div>
           <div className="image-video-container">
             <img
-              src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
+              src={movieData.image_url}
               alt="card"
-             
             />
-          </div>
-          <div className="info-container flex column">
-            <h3 className="name">
-              {movieData.name}
-            </h3>
-            <div className="icons flex j-between">
-              <div className="controls flex">
-                <IoPlayCircleSharp
-                  title="Play"
-                
-                />
-                <RiThumbUpFill title="Like" />
-                <RiThumbDownFill title="Dislike" />
-                {isLiked ? (
-                  <BsCheck
-                    title="Remove from List"
-                    onClick={() =>
-                      dispatch(
-                        removeMovieFromLiked({ movieId: movieData.id, email })
-                      )
-                    }
-                  />
-                ) : (
-                  <AiOutlinePlus title="Add to my list" onClick={addToList} />
-                )}
-              </div>
-              <div className="info">
-                <BiChevronDown title="More Info" />
-              </div>
-            </div>
-            <div className="genres flex">
-              <ul className="flex">
-                {movieData.genres.map((genre) => (
-                  <li>{genre}</li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       )}
@@ -94,76 +37,39 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
 const Container = styled.div`
   max-width: 230px;
   width: 230px;
-  height: 100%;
+  height: 230px; /* Define un tamaño fijo para mantener los elementos del mismo tamaño */
   cursor: pointer;
   position: relative;
   img {
     border-radius: 0.2rem;
     width: 100%;
     height: 100%;
-    z-index: 10;
+    object-fit: cover; /* Ajusta la imagen para que se muestre completamente dentro del contenedor */
   }
   .hover {
-    z-index: 99;
-    height: max-content;
-    width: 20rem;
     position: absolute;
-    top: -18vh;
+    top: 0;
     left: 0;
-    border-radius: 0.3rem;
-    box-shadow: rgba(0, 0, 0, 0.75) 0px 3px 10px;
-    background-color: #181818;
-    transition: 0.3s ease-in-out;
-    .image-video-container {
-      position: relative;
-      height: 140px;
-      img {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 0.3rem;
-        top: 0;
-        z-index: 4;
-        position: absolute;
-      }
-      video {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 0.3rem;
-        top: 0;
-        z-index: 5;
-        position: absolute;
-      }
-    }
-    .info-container {
-      padding: 1rem;
-      gap: 0.5rem;
-    }
-    .icons {
-      .controls {
-        display: flex;
-        gap: 1rem;
-      }
-      svg {
-        font-size: 2rem;
-        cursor: pointer;
-        transition: 0.3s ease-in-out;
-        &:hover {
-          color: #b8b8b8;
-        }
-      }
-    }
-    .genres {
-      ul {
-        gap: 1rem;
-        li {
-          padding-right: 0.7rem;
-          &:first-of-type {
-            list-style-type: none;
-          }
-        }
-      }
-    }
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column; /* Cambiar la dirección del contenido del hover */
+    z-index: 99;
+    height: 100%; /* Para cubrir completamente el contenedor padre */
+    box-sizing: border-box;
+    overflow: hidden; /* Evitar desbordamiento */
+  }
+
+  .info-container {
+    flex: 1; /* Asegura que esta parte ocupe todo el espacio disponible */
+  }
+
+  .image-video-container {
+    width: 100%;
+    height: 50%;
   }
 `;

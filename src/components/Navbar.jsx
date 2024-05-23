@@ -1,17 +1,54 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../assets/logo.svg";
 import { FaPowerOff, FaSearch } from "react-icons/fa";
+
 export default function Navbar({ isScrolled }) {
   const [showSearch, setShowSearch] = useState(false);
   const [inputHover, setInputHover] = useState(false);
-  const links = [
+  const [showMenu, setShowMenu] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserType(user.type_user);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const adminLinks = [
     { name: "Home", link: "/" },
     { name: "Tematicas", link: "/tematicas" },
     { name: "Categorias de contenido", link: "/categorias" },
     { name: "Contenido", link: "/contenido" },
   ];
+
+  const creatorLinks = [
+    { name: "Home", link: "/" },
+    { name: "Tematicas", link: "/tematicas" },
+    { name: "Categorias de contenido", link: "/categorias" },
+  ];
+
+  const readerLinks = [
+    { name: "Home", link: "/" },
+  ];
+
+  let links;
+  if (userType === "admin") {
+    links = adminLinks;
+  } else if (userType === "creator") {
+    links = creatorLinks;
+  } else {
+    links = readerLinks;
+  }
 
   return (
     <Container>
@@ -53,9 +90,16 @@ export default function Navbar({ isScrolled }) {
               }}
             />
           </div>
-          <button onClick={() => {}}>
-            <FaPowerOff />
-          </button>
+          <div className="menu">
+            <button onClick={() => setShowMenu(!showMenu)}>
+              <FaPowerOff />
+            </button>
+            {showMenu && (
+              <div className="dropdown">
+                <button onClick={handleLogout}>Cerrar sesión</button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </Container>
@@ -98,16 +142,37 @@ const Container = styled.div`
     }
     .right {
       gap: 1rem;
-      button {
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        &:focus {
-          outline: none;
+      .menu {
+        position: relative;
+        button {
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          &:focus {
+            outline: none;
+          }
+          svg {
+            color: #f34242;
+            font-size: 1.2rem;
+          }
         }
-        svg {
-          color: #f34242;
-          font-size: 1.2rem;
+        .dropdown {
+          position: absolute;
+          top: 2rem;
+          right: 0;
+          background-color: white;
+          border-radius: 0.3rem;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+          button {
+            background-color: transparent;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            &:hover {
+              background-color: #f34242;
+              color: white;
+            }
+          }
         }
       }
       .search {

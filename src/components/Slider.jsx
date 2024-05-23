@@ -1,26 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 import CardSlider from "./CardSlider";
+
 export default function Slider({ movies }) {
-  const getMoviesFromRange = (from, to) => {
-    return movies.slice(from, to);
-  };
+  const groupedMovies = movies.reduce((acc, movie) => {
+    if (!acc[movie.type_detail]) {
+      acc[movie.type_detail] = [];
+    }
+    acc[movie.type_detail].push(movie);
+    return acc;
+  }, {});
+
   return (
     <Container>
-      <CardSlider data={getMoviesFromRange(0, 10)} title="Trending Now" />
-      <CardSlider data={getMoviesFromRange(10, 20)} title="New Releases" />
-      <CardSlider
-        data={getMoviesFromRange(20, 30)}
-        title="Blockbuster Movies"
-      />
-      <CardSlider
-        data={getMoviesFromRange(30, 40)}
-        title="Popular on Netflix"
-      />
-      <CardSlider data={getMoviesFromRange(40, 50)} title="Action Movies" />
-      <CardSlider data={getMoviesFromRange(50, 60)} title="Epics" />
+      {Object.keys(groupedMovies).map((category) => (
+        <CardSlider key={category} data={groupedMovies[category]} category={category} />
+      ))}
     </Container>
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
