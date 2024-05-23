@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchMovies } from "../store";
 import SelectGenre from "../components/SelectGenre";
 import Slider from "../components/Slider";
 import { handleGetThemes } from "../controllers/themeController";
+import { handleGetContent } from "../controllers/contentController";
 
-function TVShows() {
+function Themes() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const movies = useSelector((state) => state.netflix.movies);
+  const [content, setContent] = useState([]);
   const [genres, setGenres] = useState([]);
+
+  const [selectedGenreId, setSelectedGenreId] = useState(null);
   const genresLoaded = genres.length > 0;
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -21,13 +22,24 @@ function TVShows() {
       const themes = await handleGetThemes();
       if (themes.status_code === 200) {
         setGenres(themes.list);
+        setSelectedGenreId(themes.list.length > 0 ? themes.list[0]._id : null);
       } else {
         setGenres([]);
+        setSelectedGenreId(null);
+      }
+    };
+
+    const getContents = async () => {
+      const contents = await handleGetContent({ type: "tematica" });
+      if (contents.status_code === 200) {
+        setContent(contents.list);
+      } else {
+        setContent([]);
       }
     };
 
     getThemes();
-
+    getContents();
   }, []);
 
   useEffect(() => {
@@ -45,10 +57,15 @@ function TVShows() {
     <Container>
       <Navbar isScrolled={isScrolled} />
       <div className="data">
-        <SelectGenre genres={genres} type="tv" />
-        {movies.length ? (
+        <SelectGenre
+          genres={genres}
+          type="tv"
+          defaultSelectedGenreId={selectedGenreId} 
+          setSelectedGenre={(genreId) => setSelectedGenreId(genreId)}
+        />
+        {content.length ? (
           <>
-            <Slider movies={movies} />
+            <Slider movies={content} />
           </>
         ) : (
           <h1 className="not-available">
@@ -70,4 +87,4 @@ const Container = styled.div`
   }
 `;
 
-export default TVShows;
+export default Themes;

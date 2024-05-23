@@ -2,27 +2,29 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import backgroundImage from "../assets/home.jpg";
-import MovieLogo from "../assets/homeTitle.webp";
 import Slider from "../components/Slider";
+import MoreInfoCard from "../components/MoreInfoCard";
+
+import { handleGetThemes } from "../controllers/themeController";
+import { handleGetContent } from "../controllers/contentController";
 
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchMovies, getGenres } from "../store";
-import { FaPlay } from "react-icons/fa";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
-function Netflix() {
+function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const movies = useSelector((state) => state.netflix.movies);
-  const genres = useSelector((state) => state.netflix.genres);
+  const [content, setContent] = useState([]);
+  const [genres, setGenres] = useState([]);
   const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
-
+  const [showMoreInfo, setShowMoreInfo] = useState(false); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!localStorage.getItem("user"))navigate("/login")
-      dispatch(getGenres());
+    if (!localStorage.getItem("user")) navigate("/login");
+    dispatch(getGenres());
   }, [dispatch, navigate]);
 
   useEffect(() => {
@@ -31,40 +33,58 @@ function Netflix() {
     }
   }, [dispatch, genres, genresLoaded]);
 
+  useEffect(() => {
+    const getThemes = async () => {
+      const themes = await handleGetThemes();
+      if (themes.status_code === 200) {
+        setGenres(themes.list);
+      } else if (themes.status_code === 401) {
+        navigate("/");
+      } else {
+        setGenres([]);
+      }
+    };
+
+    const getContents = async () => {
+      const contents = await handleGetContent();
+      if (contents.status_code === 200) {
+        setContent(contents.list);
+      } else {
+        setContent([]);
+      }
+    };
+
+    getThemes();
+    getContents();
+  }, [navigate]);
+
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
   };
 
+  const handleMoreInfoClick = () => {
+    setShowMoreInfo(true);
+  };
 
   return (
     <Container>
       <Navbar isScrolled={isScrolled} />
       <div className="hero">
-        <img
-          src={backgroundImage}
-          alt="background"
-          className="background-image"
-        />
+        <img src={backgroundImage} alt="background" className="background-image" />
         <div className="container">
-          <div className="logo">
-            <img src={MovieLogo} alt="Movie Logo" />
-          </div>
+
           <div className="buttons flex">
-            <button
-              className="flex j-center a-center"
-            >
-              <FaPlay />
-              Play
-            </button>
-            <button className="flex j-center a-center">
+
+            <button className="flex j-center a-center" onClick={handleMoreInfoClick}>
               <AiOutlineInfoCircle />
               More Info
             </button>
           </div>
         </div>
       </div>
-      <Slider movies={movies} />
+      <Slider movies={content} />
+      {showMoreInfo && <MoreInfoCard onClose={() => setShowMoreInfo(false)} />}
     </Container>
   );
 }
@@ -118,4 +138,5 @@ const Container = styled.div`
     }
   }
 `;
-export default Netflix;
+
+export default Home;

@@ -1,28 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchDataByGenre } from "../store";
-import { handleRegisterTheme } from "../controllers/themeController";
-import {handleRegisterCategory } from "../controllers/categoryControlles"
+import { handleRegisterTheme, handleGetThemes } from "../controllers/themeController";
+import { handleRegisterCategory, handleGetCategory } from "../controllers/categoryControlles";
+import Modal from "react-modal";
 
-export default function SelectGenre({ genres, type }) {
+Modal.setAppElement('#root');
+
+function SelectGenre({ genres, type, defaultSelectedGenreId, setSelectedGenre }) {
   const dispatch = useDispatch();
   const [textValue, setTextValue] = useState("");
-  const [permission, setPermission] = useState("imágenes");
+  const [permission, setPermission] = useState("images");
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const location = useLocation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [selectedGenre, setSelectedGenreLocal] = useState(defaultSelectedGenreId);
+  const [updatedGenres, setUpdatedGenres] = useState(genres);
 
   const isTematicasRoute = location.pathname.includes("tematicas");
 
-  
+  useEffect(() => {
+    if (isTematicasRoute) {
+      handleGetThemes().then((response) => {
+        if (response.status_code === 200) {
+          setUpdatedGenres(response.list);
+        }
+      });
+    } else {
+      handleGetCategory().then((response) => {
+        if (response.status_code === 200) {
+          setUpdatedGenres(response.list);
+        }
+      });
+    }
+  }, [isTematicasRoute]);
 
   const handleGenreChange = (e) => {
+    const selectedGenreId = e.target.value;
+    setSelectedGenreLocal(selectedGenreId); 
+    setSelectedGenre(selectedGenreId); 
     dispatch(
       fetchDataByGenre({
-        genres,
-        genre: e.target.value,
+        genres: updatedGenres,
+        genre: selectedGenreId,
         type,
       })
     );
@@ -30,30 +54,38 @@ export default function SelectGenre({ genres, type }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(isTematicasRoute){
+    if (isTematicasRoute) {
       const response = await handleRegisterTheme(textValue, permission);
       if (response.success) {
-        navigate("/tematicas" );
+        setUpdatedGenres((prevGenres) => [...prevGenres, response.themes]);
+        setModalMessage("Temática agregada exitosamente");
+        setIsModalOpen(true);
       } else {
         setErrorMessage(response.message);
       }
-    }else{
+    } else {
       const response = await handleRegisterCategory(textValue, permission);
       if (response.success) {
-        navigate("/categorias");
+        setUpdatedGenres((prevGenres) => [...prevGenres, response.categories]);
+        setModalMessage("Categoría agregada exitosamente");
+        setIsModalOpen(true);
       } else {
         setErrorMessage(response.message);
       }
     }
-   
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    navigate(isTematicasRoute ? "/tematicas" : "/categorias");
   };
 
   return (
     <Container>
       <Column>
         <h2>{isTematicasRoute ? "Lista de temáticas" : "Listar categorías"}</h2>
-        <Select onChange={handleGenreChange}>
-          {genres.map((genre) => (
+        <Select onChange={handleGenreChange} value={selectedGenre}>
+          {updatedGenres.map((genre) => (
             <option value={genre._id} key={genre._id}>
               {genre.name}
             </option>
@@ -66,7 +98,7 @@ export default function SelectGenre({ genres, type }) {
           <form onSubmit={handleSubmit}>
             <TextInput
               type="text"
-              placeholder={isTematicasRoute ? "Ingrese tematica" : "Ingrese categoría"}
+              placeholder={isTematicasRoute ? "Ingrese temática" : "Ingrese categoría"}
               value={textValue}
               onChange={(e) => setTextValue(e.target.value)}
             />
@@ -85,9 +117,20 @@ export default function SelectGenre({ genres, type }) {
           </form>
         </Card>
       </Column>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Success Modal"
+        style={customStyles}
+      >
+        <ModalContent>
+          <h2>{modalMessage}</h2>
+          <Button onClick={closeModal}>Cerrar</Button>
+        </ModalContent>
+      </Modal>
     </Container>
   );
-}
+};
 
 const Container = styled.div`
   display: grid;
@@ -160,3 +203,31 @@ const Card = styled.div`
   gap: 1rem;
   width: 100%; /* Asegura que la tarjeta ocupe todo el ancho del contenedor */
 `;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#1f1f1f',
+    border: 'none',
+    borderRadius: '0.5rem',
+    padding: '2rem',
+    color: '#fff'
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)'
+  }
+};
+
+export default SelectGenre;

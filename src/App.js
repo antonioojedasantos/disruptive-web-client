@@ -2,23 +2,22 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import MoviePage from "./pages/Movies";
-import Netflix from "./pages/Netflix";
+import Home from "./pages/Home";
 import Signup from "./pages/Signup";
-import TVShows from "./pages/TVShows";
+import Themes from "./pages/Themes";
 import UserListedMovies from "./pages/UserListedMovies";
 
 export default function App() {
   return (
- <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
-        <Route exact path="/tematicas" element={<TVShows />} />
+        <Route exact path="/tematicas" element={<Themes />} />
         <Route exact path="/categorias" element={<MoviePage />} />
         <Route exact path="/contenido" element={<UserListedMovies />} />
-        <Route exact path="/" element={<Netflix />} />
+        <Route exact path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
-   
   );
 }
